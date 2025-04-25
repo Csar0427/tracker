@@ -1,11 +1,11 @@
 const Partnership = () => {
   return (
-    <section className="bg-blue-50 py-20 px-4 text-center">
+    <section id="partnership" className="bg-white py-20 px-4 text-center">
       <div className="max-w-4xl mx-auto space-y-8">
-        <h2 className="text-4xl md:text-5xl font-bold text-blue-800">
+        <h2 className="text-4xl md:text-5xl font-bold text-black">
           Partner With Us
         </h2>
-        <p className="text-lg text-blue-700">
+        <p className="text-lg text-black">
           Are you a school or organization looking to streamline your capstone
           process? Let's work together to make file tracking and submission
           easier, faster, and more organized.
