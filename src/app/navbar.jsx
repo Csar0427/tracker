@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar() {
@@ -47,14 +47,28 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Menu Button (Animated Hamburger) */}
         <div className="lg:hidden">
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="text-white p-2 rounded-full hover:bg-white/10 transition-colors"
+            className="relative w-8 h-8 flex flex-col justify-between items-center p-1 group z-50"
             aria-label={isOpen ? "Close menu" : "Open menu"}
           >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
+            <span
+              className={`block h-0.5 w-full bg-white transform transition duration-300 ease-in-out ${
+                isOpen ? "rotate-45 translate-y-2" : ""
+              }`}
+            ></span>
+            <span
+              className={`block h-0.5 w-full bg-white transition-all duration-300 ease-in-out ${
+                isOpen ? "opacity-0" : "opacity-100"
+              }`}
+            ></span>
+            <span
+              className={`block h-0.5 w-full bg-white transform transition duration-300 ease-in-out ${
+                isOpen ? "-rotate-45 -translate-y-2" : ""
+              }`}
+            ></span>
           </button>
         </div>
 

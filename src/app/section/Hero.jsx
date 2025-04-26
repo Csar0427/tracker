@@ -24,23 +24,6 @@ export default function Hero() {
       className="relative min-h-[90vh] overflow-hidden bg-gradient-to-br from-purple-900 via-violet-800 to-indigo-900 py-20 px-4"
     >
       {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden opacity-20">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-white"
-            style={{
-              width: `${Math.random() * 10 + 5}px`,
-              height: `${Math.random() * 10 + 5}px`,
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              opacity: Math.random() * 0.5 + 0.3,
-              animation: `float ${Math.random() * 10 + 10}s linear infinite`,
-              animationDelay: `${Math.random() * 5}s`,
-            }}
-          />
-        ))}
-      </div>
 
       <div className="relative max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 pt-16">
         <motion.div
