@@ -110,15 +110,12 @@ export default function Navbar() {
             transition={{ duration: 0.3 }}
           >
             <div className="px-4 py-6 space-y-4 border-t border-white/10">
-              <MobileNavItem
-                label="Home"
-                onClick={() => handleScroll("hero")}
-              />
-              <MobileNavItem
+              <NavItem label="Home" onClick={() => handleScroll("hero")} />
+              <NavItem
                 label="Features"
                 onClick={() => handleScroll("features")}
               />
-              <MobileNavItem
+              <NavItem
                 label="Partnership"
                 onClick={() => handleScroll("partnership")}
               />
@@ -131,7 +128,7 @@ export default function Navbar() {
                   Log in
                 </Link>
                 <Link
-                  href="/signup"
+                  href="/register"
                   className="block text-center py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-lg font-medium"
                 >
                   Sign up
