@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "./../supabase"; // adjust if path differs
+import { supabase } from "./../supabase"; // adjust path if needed
 import Link from "next/link";
 
 const Login = () => {
@@ -18,7 +18,6 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
 
-    // 1. Login with email and password
     const { data: loginData, error: loginError } =
       await supabase.auth.signInWithPassword({
         email: form.identifier,
@@ -29,32 +28,46 @@ const Login = () => {
       console.error("Login error:", loginError.message);
       alert(loginError.message);
       setLoading(false);
-    } else {
-      console.log("Logged in:", loginData);
-
-      // 2. Fetch user role from your custom "user" table
-      const { data: userData, error: userError } = await supabase
-        .from("user")
-        .select("role")
-        .eq("email", form.identifier)
-        .limit(1)
-        .maybeSingle(); // safer than .maybeSingle() here
-
-      if (userError) {
-        console.error("Fetching role failed:", userError.message);
-        alert("Failed to fetch user role.");
-      } else {
-        console.log("User role:", userData.role);
-
-        // 3. Redirect user based on their role
-        if (userData.role === "professor") {
-          router.push("/teacher"); // Redirect to teacher dashboard
-        } else {
-          router.push("/student-dashboard"); // Redirect to student dashboard
-        }
-      }
-      setLoading(false);
+      return;
     }
+
+    console.log("Logged in:", loginData);
+    console.log("Value of form.identifier before query:", form.identifier); // Keep this for debugging
+
+    const { data: userData, error: userError } = await supabase
+      .from("user")
+      .select("role")
+      .eq("email", form.identifier)
+      .maybeSingle();
+
+    if (userError) {
+      console.error("Fetching role failed:", userError.message);
+      alert("Failed to fetch user role.");
+      setLoading(false);
+      return;
+    }
+
+    console.log("User data fetched:", userData); // Keep this for debugging
+
+    if (!userData || !userData.role) {
+      console.warn("No user role found in the user table.");
+      alert("No role assigned to this user. Please contact support.");
+      setLoading(false);
+      return;
+    }
+
+    console.log("User role:", userData.role);
+
+    if (userData.role === "professor") {
+      console.log("Redirecting to /teacher"); // Added log
+      router.push("/teacher");
+    } else {
+      console.log("Redirecting to /student-dashboard"); // Added log
+      router.push("/student-dashboard");
+    }
+
+    console.log("Finished handleSubmit"); // Added log
+    setLoading(false);
   };
 
   return (
