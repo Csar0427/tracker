@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "./../supabase"; // adjust path if needed
+import { supabase } from "./../supabase";
 import Link from "next/link";
 
 const Login = () => {
@@ -63,7 +63,7 @@ const Login = () => {
       router.push("/teacher");
     } else {
       console.log("Redirecting to /student-dashboard"); // Added log
-      router.push("/student-dashboard");
+      router.push("/student");
     }
 
     console.log("Finished handleSubmit"); // Added log

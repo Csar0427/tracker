@@ -7,58 +7,65 @@ import { BookOpen, Plus } from "lucide-react";
 // Import components
 import ProfileDropdown from "./../components/profile-dropdown";
 import ClassCard from "./../components/class-card";
-import CreateClassModal from "./../components/modals/create-class-modal";
-import ManageStudentsModal from "./../components/modals/manage-students-modal";
+import JoinClassModal from "./../components/modals/join-class-modal";
 
-// Add custom xs breakpoint
-
-export default function TeacherDashboard() {
+export default function StudentDashboard() {
   const [classes, setClasses] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [teacher, setTeacher] = useState(null);
-  const [managingClass, setManagingClass] = useState(null);
+  const [student, setStudent] = useState(null);
 
   const fetchClasses = async () => {
-    const { data, error } = await supabase
-      .from("classes")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (error) console.error(error);
-    else setClasses(data);
-  };
-
-  const fetchTeacherProfile = async () => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
+
     if (user) {
-      // Fetch additional teacher data if needed
+      // Get classes the student is enrolled in through the enrollments table
       const { data, error } = await supabase
-        .from("teachers")
+        .from("enrollments")
+        .select(
+          `
+          class_id,
+          classes (*)
+        `
+        )
+        .eq("student_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (error) console.error(error);
+      else {
+        // Extract the classes from the joined query
+        const studentClasses = data.map((enrollment) => enrollment.classes);
+        setClasses(studentClasses);
+      }
+    }
+  };
+
+  const fetchStudentProfile = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      // Fetch additional student data if needed
+      const { data, error } = await supabase
+        .from("students")
         .select("*")
         .eq("id", user.id)
         .single();
 
-      setTeacher({
+      setStudent({
         id: user.id,
         email: user.email,
-        name: data?.name || user.email?.split("@")[0] || "Teacher",
+        name: data?.name || user.email?.split("@")[0] || "Student",
         avatar: data?.avatar_url,
       });
     }
   };
 
-  const handleManageClass = (cls) => {
-    setManagingClass(cls);
-  };
-
-  const closeManageModal = () => {
-    setManagingClass(null);
-  };
-
   useEffect(() => {
     fetchClasses();
-    fetchTeacherProfile();
+    fetchStudentProfile();
   }, []);
 
   return (
@@ -74,7 +81,7 @@ export default function TeacherDashboard() {
               </h1>
             </div>
 
-            {teacher && <ProfileDropdown teacher={teacher} />}
+            {student && <ProfileDropdown user={student} isStudent={true} />}
           </div>
         </div>
       </header>
@@ -87,14 +94,14 @@ export default function TeacherDashboard() {
               My Classes
             </h2>
             <p className="text-sm sm:text-base text-slate-500 mt-1">
-              Manage your classes and student groups
+              View and manage your enrolled classes
             </p>
           </div>
           <button
             onClick={() => setIsOpen(true)}
             className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-4 py-2 rounded-lg shadow-lg shadow-purple-500/20 flex items-center justify-center sm:justify-start"
           >
-            <Plus className="mr-2 h-4 w-4" /> Create New Class
+            <Plus className="mr-2 h-4 w-4" /> Join Class
           </button>
         </div>
 
@@ -106,8 +113,7 @@ export default function TeacherDashboard() {
                 key={cls.id}
                 cls={cls}
                 index={index}
-                onClassUpdated={fetchClasses}
-                onManageClass={handleManageClass}
+                isStudent={true}
               />
             ))
           ) : (
@@ -117,28 +123,23 @@ export default function TeacherDashboard() {
                 No classes yet
               </h3>
               <p className="text-sm sm:text-base text-slate-500 mb-4">
-                Create your first class to get started
+                Join your first class to get started
               </p>
               <button
                 onClick={() => setIsOpen(true)}
                 className="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 flex items-center"
               >
-                <Plus className="mr-2 h-4 w-4" /> Create Class
+                <Plus className="mr-2 h-4 w-4" /> Join Class
               </button>
             </div>
           )}
         </div>
 
-        {/* Modals */}
-        <CreateClassModal
+        {/* Modal */}
+        <JoinClassModal
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
-          onClassCreated={fetchClasses}
-        />
-
-        <ManageStudentsModal
-          managingClass={managingClass}
-          onClose={closeManageModal}
+          onClassJoined={fetchClasses}
         />
       </main>
     </div>
